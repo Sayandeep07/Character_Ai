@@ -67,3 +67,4 @@ if user_prompt:
     # Add user and assistant messages to chat history
     st.session_state.chat_history.append({"role": "user", "message": user_prompt})
     st.session_state.chat_history.append({"role": "assistant", "message": text_result})
+    
