@@ -34,12 +34,12 @@ def reset_chat():
 
 # Sidebar for character selection
 with st.sidebar:
-    st.title("Choose the Character")
-    
-    # New Chat button
+    # New Chat button at the top
     if st.button("New Chat"):
         reset_chat()
-    
+
+    st.title("Choose the Character")
+
     # Character name input
     character_name = st.text_input("Character name", value=st.session_state.get("character_name", ""))
 
@@ -58,7 +58,7 @@ user_prompt = st.chat_input("Ask me")
 
 if user_prompt:
     st.chat_message("user").markdown(user_prompt)
-    
+
     # Initialize LLM Chain
     chain = LLMChain(
         llm=my_llm,
