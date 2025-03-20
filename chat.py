@@ -20,6 +20,44 @@ my_llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0.3)
 # Set Streamlit page configuration
 st.set_page_config(page_title="Character AI", page_icon="💀", layout="centered")
 
+# Apply custom CSS
+st.markdown(
+    """
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        .stApp {
+            background: #121212;
+        }
+        .stChatMessage {
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .stChatMessage.user {
+            background-color: #444;
+            text-align: left;
+        }
+        .stChatMessage.assistant {
+            background-color: #007ACC;
+            text-align: left;
+        }
+        .sidebar .sidebar-content {
+            background: #222;
+            color: white;
+        }
+        .stButton > button {
+            background: #007ACC;
+            color: white;
+            border-radius: 8px;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.header("Character AI")
 st.subheader("Chat with your character")
 
@@ -34,16 +72,12 @@ def reset_chat():
 
 # Sidebar for character selection
 with st.sidebar:
-    # New Chat button at the top
     if st.button("New Chat"):
         reset_chat()
 
     st.title("Choose the Character")
-
-    # Character name input
     character_name = st.text_input("Character name", value=st.session_state.get("character_name", ""))
 
-    # Create the prompt template without series name
     my_prompt = PromptTemplate.from_template(
         "you are {character_name}, a fictional character, and you have the personality of {character_name}. Answer as if you are the character being asked by the fan: {question}"
     )
@@ -59,19 +93,9 @@ user_prompt = st.chat_input("Ask me")
 if user_prompt:
     st.chat_message("user").markdown(user_prompt)
 
-    # Initialize LLM Chain
-    chain = LLMChain(
-        llm=my_llm,
-        prompt=my_prompt
-    )
+    chain = LLMChain(llm=my_llm, prompt=my_prompt)
+    input_data = {'character_name': character_name, 'question': user_prompt}
 
-    # Pass input data to LLM Chain
-    input_data = {
-        'character_name': character_name,
-        'question': user_prompt
-    }
-
-    # Generate response
     try:
         response = chain.invoke(input=input_data)
         text_result = response["text"]
@@ -79,13 +103,10 @@ if user_prompt:
         text_result = "Sorry, I couldn't process your request. Please try again later."
         st.error(text_result)
 
-    # Display Gemini-Pro's response
     with st.chat_message("assistant"):
         st.markdown(text_result)
 
-    # Add user and assistant messages to chat history
     st.session_state.chat_history.append({"role": "user", "message": user_prompt})
     st.session_state.chat_history.append({"role": "assistant", "message": text_result})
 
-    # Update character name in session state
     st.session_state.character_name = character_name
