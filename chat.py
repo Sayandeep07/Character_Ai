@@ -15,43 +15,61 @@ if not api_key:
     st.stop()  # Stop execution if API key is missing
 
 # Initialize the Generative AI model
-my_llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0.3)
+my_llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0.7)
 
 # Set Streamlit page configuration
 st.set_page_config(page_title="Character AI", page_icon="💀", layout="centered")
 
-# Apply custom CSS
+# Apply custom neon CSS with gradient background
 st.markdown(
     """
     <style>
-        body {
-            background-color: #1e1e1e;
-            color: white;
-        }
-        .stApp {
-            background: #121212;
-        }
+        html, body {
+        height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460) !important;
+        background-attachment: fixed;
+        color: #ffffff;
+        font-family: 'Arial', sans-serif;
+    }
+    .stApp {
+        background: transparent !important;
+    }
         .stChatMessage {
             border-radius: 10px;
             padding: 10px;
             margin-bottom: 10px;
+            font-size: 16px;
         }
         .stChatMessage.user {
-            background-color: #444;
+            background: rgba(255, 0, 150, 0.3);
+            border-left: 4px solid #ff00ff;
             text-align: left;
         }
         .stChatMessage.assistant {
-            background-color: #007ACC;
+            background: rgba(0, 255, 255, 0.3);
+            border-left: 4px solid #00ffff;
             text-align: left;
         }
         .sidebar .sidebar-content {
-            background: #222;
+            background: rgba(20, 20, 20, 0.8);
             color: white;
         }
         .stButton > button {
-            background: #007ACC;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
             color: white;
             border-radius: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0px 0px 10px rgba(255, 0, 255, 0.8);
+        }
+        .stButton > button:hover {
+            box-shadow: 0px 0px 15px rgba(0, 255, 255, 1);
+        }
+        .stTextInput > div > div > input {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid #ff00ff;
+            border-radius: 5px;
         }
     </style>
     """,
@@ -76,10 +94,18 @@ with st.sidebar:
         reset_chat()
 
     st.title("Choose the Character")
-    character_name = st.text_input("Character name", value=st.session_state.get("character_name", ""))
+    character_name = st.selectbox("Character name", ["Gojo", "Sukuna", "Doraemon", "Trump", "Cat"], index=0)
 
     my_prompt = PromptTemplate.from_template(
-        "you are {character_name}, a fictional character, and you have the personality of {character_name}. Answer as if you are the character being asked by the fan: {question}"
+        """
+        You are {character_name}, a well-known and iconic character with a distinct personality.
+        Stay completely in character and respond in an engaging, humorous, and natural way.
+        If you're Gojo, be charming, confident, and witty. If you're Sukuna, be menacing but sarcastically funny.
+        If you're Doraemon, be kind and wise, with a touch of childlike wonder. If you're Trump, be bold and over-the-top.
+        If you're Cat, be playful and mischievous, as a talking cat would be.
+        Your responses should be highly entertaining, full of personality, and as if you are truly the character.
+        The fan asks: {question}
+        """
     )
 
 # Display chat history
