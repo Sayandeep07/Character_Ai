@@ -23,7 +23,7 @@ st.set_page_config(page_title="Character AI", page_icon="💀", layout="centered
 # Apply custom neon CSS with gradient background
 st.markdown(
     """
-    #<style>
+    <style>
         html, body {
         height: 100vh;
         background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460) !important;
@@ -71,7 +71,7 @@ st.markdown(
             border: 2px solid #ff00ff;
             border-radius: 5px;
         }
-   # </style>
+    </style>
     """,
     unsafe_allow_html=True
 )
