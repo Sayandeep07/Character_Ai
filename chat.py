@@ -5,6 +5,35 @@ from langchain.chains import LLMChain
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
+import speech_recognition as sr
+
+
+def recognize_speech():
+    # Initialize recognizer
+    recognizer = sr.Recognizer()
+    # Use microphone as source
+    with sr.Microphone() as source:
+        st.info("Adjusting for ambient noise. Please wait...")
+        recognizer.adjust_for_ambient_noise(source, duration=1)
+        st.info("Listening... Speak now!")
+        try:
+            # Capture audio and recognize using Google Speech Recognition
+            audio_data = recognizer.listen(source)
+            st.info("Recognizing...")
+            text = recognizer.recognize_google(audio_data)
+            st.success(f"Recognized: {text}")
+            return text  # Return the recognized text
+        except sr.UnknownValueError:
+            st.warning("Sorry, could not understand the audio.")
+            return None  # Return None on error
+        except sr.RequestError:
+            st.error("Could not request results. Check your internet connection.")
+            return None  # Return None on error
+
+
+if __name__ == "__main__":
+    # The direct call is removed from here, as it's part of the Streamlit flow now.
+    pass
 
 # Load environment variables
 load_dotenv()
@@ -18,7 +47,7 @@ if not api_key:
 my_llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0.7)
 
 # Set Streamlit page configuration
-st.set_page_config(page_title="Character AI", page_icon="💀", layout="centered")
+st.set_page_config(page_title="Character AI", page_icon="💀brew install python", layout="centered")
 
 # Apply custom neon CSS with gradient background
 st.markdown(
@@ -83,10 +112,12 @@ st.subheader("Chat with your character")
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
+
 # Function to reset chat
 def reset_chat():
     st.session_state.chat_history = []
     st.session_state.character_name = ""
+
 
 # Sidebar for character selection
 with st.sidebar:
@@ -94,7 +125,8 @@ with st.sidebar:
         reset_chat()
 
     st.title("Choose the Character")
-    character_name = st.selectbox("Character name", ["Gojo", "Sukuna", "Doraemon", "Trump", "Cat"], index=0)
+    character_name = st.selectbox("Character name", ["Sukuna", "Doraemon", "Trump", "Elon Musk", "Taylor Swift"],
+                                  index=0)
 
     my_prompt = PromptTemplate.from_template(
         """
@@ -113,9 +145,22 @@ for chat in st.session_state.chat_history:
     with st.chat_message(chat["role"]):
         st.markdown(chat["message"])
 
-# Chat input and sidebar for character selection
+# Voice input button outside the text input check
+voice_input_button = st.button("🎙️ Speak Now")
+
+# Handle text input OR voice input
 user_prompt = st.chat_input("Ask me")
 
+if voice_input_button:
+    # If voice button was clicked, attempt speech recognition
+    recognized_text = recognize_speech()
+    if recognized_text:
+        user_prompt = recognized_text  # Use recognized text as the prompt
+    else:
+        # Keep user_prompt as None if recognition failed, so it doesn't proceed
+        user_prompt = None
+
+    # Process the prompt if it exists (either from text input or successful voice recognition)
 if user_prompt:
     st.chat_message("user").markdown(user_prompt)
 
