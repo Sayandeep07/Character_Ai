@@ -5,8 +5,7 @@ from langchain.chains import LLMChain
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
-import speech_recognition as sr
-
+import speech_recognition as sr 
 
 def recognize_speech():
     # Initialize recognizer
@@ -25,11 +24,10 @@ def recognize_speech():
             return text  # Return the recognized text
         except sr.UnknownValueError:
             st.warning("Sorry, could not understand the audio.")
-            return None  # Return None on error
+            return None # Return None on error
         except sr.RequestError:
             st.error("Could not request results. Check your internet connection.")
-            return None  # Return None on error
-
+            return None # Return None on error
 
 if __name__ == "__main__":
     # The direct call is removed from here, as it's part of the Streamlit flow now.
@@ -47,7 +45,7 @@ if not api_key:
 my_llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0.7)
 
 # Set Streamlit page configuration
-st.set_page_config(page_title="Character AI", page_icon="💀brew install python", layout="centered")
+st.set_page_config(page_title="Character AI", page_icon="🤖", layout="centered")
 
 # Apply custom neon CSS with gradient background
 st.markdown(
@@ -112,12 +110,10 @@ st.subheader("Chat with your character")
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-
 # Function to reset chat
 def reset_chat():
     st.session_state.chat_history = []
     st.session_state.character_name = ""
-
 
 # Sidebar for character selection
 with st.sidebar:
@@ -125,8 +121,7 @@ with st.sidebar:
         reset_chat()
 
     st.title("Choose the Character")
-    character_name = st.selectbox("Character name", ["Sukuna", "Doraemon", "Trump", "Elon Musk", "Taylor Swift"],
-                                  index=0)
+    character_name = st.selectbox("Character name", ["Sukuna", "Doraemon", "Trump", "Elon Musk","Taylor Swift"], index=0)
 
     my_prompt = PromptTemplate.from_template(
         """
@@ -155,12 +150,12 @@ if voice_input_button:
     # If voice button was clicked, attempt speech recognition
     recognized_text = recognize_speech()
     if recognized_text:
-        user_prompt = recognized_text  # Use recognized text as the prompt
+        user_prompt = recognized_text # Use recognized text as the prompt
     else:
         # Keep user_prompt as None if recognition failed, so it doesn't proceed
-        user_prompt = None
+        user_prompt = None 
 
-    # Process the prompt if it exists (either from text input or successful voice recognition)
+# Process the prompt if it exists (either from text input or successful voice recognition)
 if user_prompt:
     st.chat_message("user").markdown(user_prompt)
 
@@ -181,3 +176,4 @@ if user_prompt:
     st.session_state.chat_history.append({"role": "assistant", "message": text_result})
 
     st.session_state.character_name = character_name
+    
